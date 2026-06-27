@@ -1,0 +1,57 @@
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom border-secondary">
+  <h1 class="h2 text-white">Rewards</h1>
+  <%= link_to 'New Reward', new_admin_reward_path, class: 'btn btn-primary' %>
+</div>
+
+<div class="admin-card">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Campaign</th>
+          <th>Type</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Stock</th>
+          <th style="width: 150px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @rewards.any? %>
+          <% @rewards.each do |reward| %>
+            <tr>
+              <td><%= reward.id %></td>
+              <td><span class="badge bg-secondary"><%= reward.campaign&.name %></span></td>
+              <td>
+                <% case reward.reward_type %>
+                <% when 'gift' %>
+                  <span class="badge bg-info text-dark">Gift</span>
+                <% when 'price' %>
+                  <span class="badge bg-success">Price/Prize</span>
+                <% when 'trip' %>
+                  <span class="badge bg-primary">Trip</span>
+                <% else %>
+                  <span class="badge bg-light text-dark"><%= reward.reward_type %></span>
+                <% end %>
+              </td>
+              <td class="fw-bold text-white"><%= reward.name %></td>
+              <td><%= reward.description %></td>
+              <td><%= reward.stock %></td>
+              <td>
+                <div class="d-flex gap-2">
+                  <%= link_to 'Edit', edit_admin_reward_path(reward), class: 'btn btn-outline-warning btn-sm' %>
+                  <%= button_to 'Delete', admin_reward_path(reward), method: :delete, data: { turbo_confirm: 'Are you sure?' }, class: 'btn btn-outline-danger btn-sm' %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">No rewards created yet.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

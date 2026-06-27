@@ -1,0 +1,32 @@
+<%= form_with(model: [:admin, sub_category], local: true) do |f| %>
+  <% if sub_category.errors.any? %>
+    <div class="alert alert-danger">
+      <h6 class="alert-heading"><%= pluralize(sub_category.errors.count, "error") %> prohibited this sub category from being saved:</h6>
+      <ul class="mb-0">
+        <% sub_category.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :category_id, "Category", class: 'form-label text-white' %>
+    <%= f.collection_select :category_id, Category.all, :id, :name, { prompt: "Select a Category" }, class: 'form-select bg-dark text-white border-secondary' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :name, class: 'form-label text-white' %>
+    <%= f.text_field :name, class: 'form-control bg-dark text-white border-secondary' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :description, class: 'form-label text-white' %>
+    <%= f.text_area :description, rows: 4, class: 'form-control bg-dark text-white border-secondary' %>
+  </div>
+
+  <div class="mt-4">
+    <%= f.submit class: 'btn btn-primary me-2' %>
+    <%= link_to 'Cancel', admin_sub_categories_path, class: 'btn btn-outline-light' %>
+  </div>
+<% end %>

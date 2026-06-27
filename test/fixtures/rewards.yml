@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  campaign: one
+  reward_type: MyString
+  name: MyString
+  description: MyText
+  stock: 1
+
+two:
+  campaign: two
+  reward_type: MyString
+  name: MyString
+  description: MyText
+  stock: 1

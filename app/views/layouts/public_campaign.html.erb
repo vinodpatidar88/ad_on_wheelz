@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= @campaign&.name || "AdOnWheels Rewards" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#0b0a12">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+      :root {
+        --bg-main: hsl(250, 24%, 6%);
+        --bg-surface: rgba(255, 255, 255, 0.03);
+        --border-glass: rgba(255, 255, 255, 0.07);
+        
+        --color-primary: hsl(263, 90%, 65%);
+        --color-primary-glow: hsla(263, 90%, 65%, 0.35);
+        --color-secondary: hsl(186, 95%, 48%);
+        --color-secondary-glow: hsla(186, 95%, 48%, 0.35);
+        --color-accent: hsl(45, 95%, 55%);
+        --color-accent-glow: hsla(45, 95%, 55%, 0.35);
+        
+        --text-main: hsl(210, 40%, 96%);
+        --text-muted: hsl(215, 16%, 60%);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Outfit', sans-serif;
+        background: radial-gradient(circle at 50% -20%, hsl(263, 40%, 15%) 0%, var(--bg-main) 70%);
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+      }
+
+      .glass-card {
+        background: var(--bg-surface);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--border-glass);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      .text-glow-primary {
+        text-shadow: 0 0 15px var(--color-primary-glow);
+      }
+
+      .text-glow-secondary {
+        text-shadow: 0 0 15px var(--color-secondary-glow);
+      }
+
+      /* Animated gradients & glows */
+      .glowing-btn {
+        background: linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        box-shadow: 0 0 20px var(--color-primary-glow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .glowing-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 30px hsla(263, 90%, 65%, 0.6);
+        color: white;
+      }
+
+      .glowing-btn:active {
+        transform: translateY(0);
+      }
+
+      .glowing-btn::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg);
+        transition: all 0.5s;
+        opacity: 0;
+      }
+
+      .glowing-btn:hover::after {
+        opacity: 1;
+        left: 120%;
+      }
+
+      /* Pulse glow keys */
+      @keyframes pulse-glow {
+        0% {
+          box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+        50% {
+          box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+        }
+        100% {
+          box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+      }
+
+      /* Transitions */
+      .fade-in {
+        animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive UI Adjustments */
+      @media (max-width: 576px) {
+        .glass-card {
+          border-radius: 16px;
+          padding: 1.5rem !important;
+        }
+        h1 {
+          font-size: 1.8rem !important;
+        }
+        h2 {
+          font-size: 1.4rem !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <%= yield %>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+<%= form_with(model: [:admin, reward], local: true) do |f| %>
+  <% if reward.errors.any? %>
+    <div class="alert alert-danger">
+      <h6 class="alert-heading"><%= pluralize(reward.errors.count, "error") %> prohibited this reward from being saved:</h6>
+      <ul class="mb-0">
+        <% reward.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :campaign_id, "Campaign", class: 'form-label text-white' %>
+    <%= f.collection_select :campaign_id, Campaign.all, :id, :name, { prompt: "Select a Campaign" }, class: 'form-select bg-dark text-white border-secondary' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :reward_type, "Reward Type", class: 'form-label text-white' %>
+    <%= f.select :reward_type, Reward::REWARD_TYPES.map { |t| [t.capitalize, t] }, { prompt: "Select a Type" }, class: 'form-select bg-dark text-white border-secondary' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :name, class: 'form-label text-white' %>
+    <%= f.text_field :name, class: 'form-control bg-dark text-white border-secondary' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :description, class: 'form-label text-white' %>
+    <%= f.text_area :description, rows: 4, class: 'form-control bg-dark text-white border-secondary' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :stock, class: 'form-label text-white' %>
+    <%= f.number_field :stock, min: 0, class: 'form-control bg-dark text-white border-secondary' %>
+  </div>
+
+  <div class="mt-4">
+    <%= f.submit class: 'btn btn-primary me-2' %>
+    <%= link_to 'Cancel', admin_rewards_path, class: 'btn btn-outline-light' %>
+  </div>
+<% end %>

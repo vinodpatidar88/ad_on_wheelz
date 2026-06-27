@@ -1,0 +1,569 @@
+<div class="container py-5 my-auto">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8 col-sm-12">
+      
+      <!-- Brand Logo / Header -->
+      <div class="text-center mb-4 fade-in">
+        <h2 class="fw-bold text-white mb-1"><%= @campaign.name %></h2>
+        <p class="text-muted"><%= @campaign.description %></p>
+      </div>
+
+      <!-- Main Wizard Card -->
+      <div class="glass-card p-4 p-md-5 fade-in">
+        
+        <!-- Progress Steps Tracker -->
+        <div class="d-flex justify-content-between mb-5 position-relative" style="z-index: 1;">
+          <div class="position-absolute start-0 end-0 top-50 translate-middle-y bg-secondary" style="height: 2px; z-index: -1; opacity: 0.2;"></div>
+          <div id="progress-bar-fill" class="position-absolute start-0 top-50 translate-middle-y bg-primary" style="height: 2px; width: 0%; z-index: -1; transition: width 0.4s ease;"></div>
+          
+          <div class="step-indicator active" id="ind-1">
+            <span class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold bg-primary" style="width: 35px; height: 35px; box-shadow: 0 0 15px rgba(168,85,247,0.4);">1</span>
+            <small class="text-muted d-none d-sm-block mt-1 text-center" style="font-size: 11px;">Reward</small>
+          </div>
+          <div class="step-indicator" id="ind-2">
+            <span class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold bg-dark border border-secondary" style="width: 35px; height: 35px; transition: all 0.3s;">2</span>
+            <small class="text-muted d-none d-sm-block mt-1 text-center" style="font-size: 11px;">Verify</small>
+          </div>
+          <div class="step-indicator" id="ind-3">
+            <span class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold bg-dark border border-secondary" style="width: 35px; height: 35px; transition: all 0.3s;">3</span>
+            <small class="text-muted d-none d-sm-block mt-1 text-center" style="font-size: 11px;">Details</small>
+          </div>
+          <div class="step-indicator" id="ind-4">
+            <span class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold bg-dark border border-secondary" style="width: 35px; height: 35px; transition: all 0.3s;">4</span>
+            <small class="text-muted d-none d-sm-block mt-1 text-center" style="font-size: 11px;">Finish</small>
+          </div>
+        </div>
+
+        <!-- Simulated OTP Notification Banner (Dev-only helper) -->
+        <% if Rails.env.development? || Rails.env.test? %>
+          <div id="simulated-otp-banner" class="alert alert-info py-2 px-3 mb-4 rounded-3 text-xs d-none align-items-center gap-2" style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.2); color: #38bdf8;">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Simulated OTP: <strong id="simulated-otp-text">------</strong></span>
+          </div>
+        <% end %>
+
+        <!-- Wizard Steps Container -->
+        <div class="wizard-steps">
+          
+          <!-- STEP 1: SELECT REWARD -->
+          <div class="wizard-step" id="step-1">
+            <h4 class="text-white fw-bold mb-3 text-center">Select Your Reward 🎁</h4>
+            <p class="text-muted text-center mb-4">Select the reward category and prize card you wish to win!</p>
+
+            <div class="rewards-container">
+              <!-- Tabs for Reward Types -->
+              <ul class="nav nav-pills justify-content-center mb-4" id="rewardTabs" role="tablist" style="gap: 10px;">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active px-4 rounded-pill border border-secondary text-white bg-dark" id="gift-tab" data-bs-toggle="pill" data-bs-target="#tab-gift" type="button" role="tab" style="font-size: 14px; transition: all 0.2s;">🎁 Gift</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link px-4 rounded-pill border border-secondary text-white bg-dark" id="price-tab" data-bs-toggle="pill" data-bs-target="#tab-price" type="button" role="tab" style="font-size: 14px; transition: all 0.2s;">💰 Prize</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link px-4 rounded-pill border border-secondary text-white bg-dark" id="trip-tab" data-bs-toggle="pill" data-bs-target="#tab-trip" type="button" role="tab" style="font-size: 14px; transition: all 0.2s;">✈️ Trip</button>
+                </li>
+              </ul>
+
+              <div class="tab-content" id="rewardTabsContent">
+                <!-- Gifts Tab -->
+                <div class="tab-pane fade show active" id="tab-gift" role="tabpanel">
+                  <div class="row g-3">
+                    <% if @rewards['gift'].present? %>
+                      <% @rewards['gift'].each do |reward| %>
+                        <div class="col-12">
+                          <div class="reward-card p-3 rounded-4 bg-dark border border-secondary d-flex justify-content-between align-items-center cursor-pointer" onclick="selectReward(<%= reward.id %>, this)" style="cursor: pointer; transition: all 0.3s;">
+                            <div>
+                              <h6 class="text-white mb-1"><%= reward.name %></h6>
+                              <small class="text-muted d-block" style="font-size: 12px;"><%= reward.description %></small>
+                            </div>
+                            <span class="badge bg-purple px-2 py-1" style="background: rgba(168,85,247,0.1); color: #c084fc; font-size: 11px;">GIFT</span>
+                          </div>
+                        </div>
+                      <% end %>
+                    <% else %>
+                      <p class="text-center text-muted py-3">No gifts available currently.</p>
+                    <% end %>
+                  </div>
+                </div>
+
+                <!-- Prize Tab -->
+                <div class="tab-pane fade" id="tab-price" role="tabpanel">
+                  <div class="row g-3">
+                    <% if @rewards['price'].present? %>
+                      <% @rewards['price'].each do |reward| %>
+                        <div class="col-12">
+                          <div class="reward-card p-3 rounded-4 bg-dark border border-secondary d-flex justify-content-between align-items-center cursor-pointer" onclick="selectReward(<%= reward.id %>, this)" style="cursor: pointer; transition: all 0.3s;">
+                            <div>
+                              <h6 class="text-white mb-1"><%= reward.name %></h6>
+                              <small class="text-muted d-block" style="font-size: 12px;"><%= reward.description %></small>
+                            </div>
+                            <span class="badge bg-cyan px-2 py-1" style="background: rgba(6,182,212,0.1); color: #22d3ee; font-size: 11px;">PRIZE</span>
+                          </div>
+                        </div>
+                      <% end %>
+                    <% else %>
+                      <p class="text-center text-muted py-3">No cash prizes available currently.</p>
+                    <% end %>
+                  </div>
+                </div>
+
+                <!-- Trip Tab -->
+                <div class="tab-pane fade" id="tab-trip" role="tabpanel">
+                  <div class="row g-3">
+                    <% if @rewards['trip'].present? %>
+                      <% @rewards['trip'].each do |reward| %>
+                        <div class="col-12">
+                          <div class="reward-card p-3 rounded-4 bg-dark border border-secondary d-flex justify-content-between align-items-center cursor-pointer" onclick="selectReward(<%= reward.id %>, this)" style="cursor: pointer; transition: all 0.3s;">
+                            <div>
+                              <h6 class="text-white mb-1"><%= reward.name %></h6>
+                              <small class="text-muted d-block" style="font-size: 12px;"><%= reward.description %></small>
+                            </div>
+                            <span class="badge bg-gold px-2 py-1" style="background: rgba(234,179,8,0.1); color: #facc15; font-size: 11px;">TRIP</span>
+                          </div>
+                        </div>
+                      <% end %>
+                    <% else %>
+                      <p class="text-center text-muted py-3">No trips available currently.</p>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Validation Error Msg -->
+            <div id="reward-error" class="text-danger text-center mt-3 text-sm d-none"></div>
+
+            <div class="text-center mt-5">
+              <button id="btn-goto-step2" class="glowing-btn w-100" onclick="submitRewardSelection()">Next: Verify Phone <i class="fa-solid fa-arrow-right ms-1"></i></button>
+            </div>
+          </div>
+
+          <!-- STEP 2: PHONE & OTP VERIFICATION -->
+          <div class="wizard-step d-none" id="step-2">
+            <h4 class="text-white fw-bold mb-3 text-center">Verify Mobile Number 📱</h4>
+            <p class="text-muted text-center mb-4">Enter your mobile number to receive a 6-digit OTP verification code.</p>
+
+            <!-- Phone Number Input Group -->
+            <div id="phone-input-section" class="fade-in">
+              <div class="mb-4">
+                <label class="form-label text-muted" style="font-size: 13px;">Mobile Number</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-dark text-muted border-secondary">+91</span>
+                  <input type="tel" id="user-phone" placeholder="9876543210" class="form-control bg-dark text-white border-secondary" style="font-weight: 500;">
+                </div>
+                <div id="phone-error" class="text-danger text-xs mt-2 d-none"></div>
+              </div>
+              <button class="glowing-btn w-100" onclick="requestOTP()">Send Verification Code</button>
+            </div>
+
+            <!-- OTP Input Section -->
+            <div id="otp-input-section" class="fade-in d-none">
+              <div class="mb-4">
+                <label class="form-label text-muted d-block text-center" style="font-size: 13px;">Enter 6-Digit OTP</label>
+                <div class="d-flex justify-content-center gap-2 mb-3" id="otp-box-container">
+                  <input type="text" maxlength="1" class="form-control otp-digit text-center bg-dark text-white border-secondary" style="width: 45px; height: 50px; font-size: 20px; font-weight: bold;">
+                  <input type="text" maxlength="1" class="form-control otp-digit text-center bg-dark text-white border-secondary" style="width: 45px; height: 50px; font-size: 20px; font-weight: bold;">
+                  <input type="text" maxlength="1" class="form-control otp-digit text-center bg-dark text-white border-secondary" style="width: 45px; height: 50px; font-size: 20px; font-weight: bold;">
+                  <input type="text" maxlength="1" class="form-control otp-digit text-center bg-dark text-white border-secondary" style="width: 45px; height: 50px; font-size: 20px; font-weight: bold;">
+                  <input type="text" maxlength="1" class="form-control otp-digit text-center bg-dark text-white border-secondary" style="width: 45px; height: 50px; font-size: 20px; font-weight: bold;">
+                  <input type="text" maxlength="1" class="form-control otp-digit text-center bg-dark text-white border-secondary" style="width: 45px; height: 50px; font-size: 20px; font-weight: bold;">
+                </div>
+                <div id="otp-error" class="text-danger text-xs mt-2 text-center d-none"></div>
+              </div>
+              <button class="glowing-btn w-100 mb-3" onclick="submitOTP()">Verify OTP Code</button>
+              <div class="text-center">
+                <button class="btn btn-link btn-sm text-decoration-none text-muted" onclick="changePhoneNumber()"><i class="fa-solid fa-arrow-left me-1"></i> Change Number</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: USER DETAILS -->
+          <div class="wizard-step d-none" id="step-3">
+            <h4 class="text-white fw-bold mb-3 text-center">Complete Your Profile 👤</h4>
+            <p class="text-muted text-center mb-4">Please fill in your details to successfully claim your selected reward.</p>
+
+            <form id="profile-details-form" onsubmit="event.preventDefault(); submitUserDetails();">
+              <div class="row g-3 mb-4">
+                <div class="col-6">
+                  <label class="form-label text-muted" style="font-size: 13px;">First Name</label>
+                  <input type="text" id="user-first-name" class="form-control bg-dark text-white border-secondary" required>
+                </div>
+                <div class="col-6">
+                  <label class="form-label text-muted" style="font-size: 13px;">Last Name</label>
+                  <input type="text" id="user-last-name" class="form-control bg-dark text-white border-secondary" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label text-muted" style="font-size: 13px;">Email Address</label>
+                  <input type="email" id="user-email" class="form-control bg-dark text-white border-secondary" placeholder="alex@example.com" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label text-muted" style="font-size: 13px;">Delivery/Location Address</label>
+                  <textarea id="user-address" rows="3" class="form-control bg-dark text-white border-secondary" placeholder="Enter your full address..." required></textarea>
+                </div>
+              </div>
+              <div id="details-error" class="text-danger text-xs mb-3 text-center d-none"></div>
+              <button type="submit" class="glowing-btn w-100">Claim Reward Now</button>
+            </form>
+          </div>
+
+          <!-- STEP 4: CONGRATULATIONS -->
+          <div class="wizard-step d-none text-center" id="step-4">
+            <div class="mb-4">
+              <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success" style="width: 75px; height: 75px; box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);">
+                <i class="fa-solid fa-check text-white" style="font-size: 32px;"></i>
+              </span>
+            </div>
+            <h2 class="text-white fw-bold mb-2">Congratulations! 🎉</h2>
+            <h5 class="text-glow-secondary text-info fw-semibold mb-4" id="congrats-reward-name">Your Reward has been Reserved!</h5>
+            <p class="text-muted mb-4">
+              We have successfully saved your submission. Our team will verify the details and dispatch your reward shortly!
+            </p>
+            <div class="p-3 bg-dark rounded-4 border border-secondary mb-4">
+              <small class="text-muted d-block">Claim Ref ID</small>
+              <code class="text-white" id="congrats-profile-id">#-----</code>
+            </div>
+            <p class="text-xs text-muted">Thank you for participating with AdOnWheels!</p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Canvas Confetti Overlay (Step 4 animation) -->
+<canvas id="confetti-canvas" class="position-fixed top-0 start-0 w-100 h-100" style="pointer-events: none; z-index: 9999; display: none;"></canvas>
+
+<style>
+  /* Custom step interactive states */
+  .reward-card:hover {
+    border-color: var(--color-primary) !important;
+    background: rgba(168, 85, 247, 0.05) !important;
+    transform: translateY(-2px);
+  }
+  .reward-card.selected {
+    border-color: var(--color-secondary) !important;
+    background: rgba(6, 182, 212, 0.06) !important;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+  }
+  
+  #rewardTabs .nav-link.active {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+  }
+</style>
+
+<script>
+  // Flow States
+  let campaignToken = "<%= @campaign.qr_token %>";
+  let timeToken = "<%= @time_token %>";
+  let timestamp = "<%= @timestamp %>";
+  let selectedRewardId = null;
+  let userProfileId = null;
+  let currentStep = 1;
+
+  // Set CSRF headers helper
+  function getRequestHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+      'X-Time-Token': timeToken,
+      'X-Time-Stamp': timestamp
+    };
+  }
+
+  // Set selected reward
+  function selectReward(id, element) {
+    selectedRewardId = id;
+    document.querySelectorAll('.reward-card').forEach(card => card.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('reward-error').classList.add('d-none');
+  }
+
+  // Transition Step Helper
+  function showStep(stepNum) {
+    currentStep = stepNum;
+    
+    // Update active indicators
+    for (let i = 1; i <= 4; i++) {
+      let ind = document.getElementById(`ind-${i}`);
+      let circle = ind.querySelector('span');
+      if (i < stepNum) {
+        // Completed step style
+        circle.className = "d-flex align-items-center justify-content-center rounded-circle text-white fw-bold bg-success";
+        circle.innerHTML = `<i class="fa-solid fa-check"></i>`;
+      } else if (i === stepNum) {
+        // Current step style
+        circle.className = "d-flex align-items-center justify-content-center rounded-circle text-white fw-bold bg-primary";
+        circle.innerHTML = i;
+        circle.style.boxShadow = "0 0 15px rgba(168,85,247,0.4)";
+      } else {
+        // Upcoming step style
+        circle.className = "d-flex align-items-center justify-content-center rounded-circle text-white fw-bold bg-dark border border-secondary";
+        circle.innerHTML = i;
+        circle.style.boxShadow = "none";
+      }
+    }
+
+    // Update progress bar width
+    let percent = ((stepNum - 1) / 3) * 100;
+    document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+
+    // Show/Hide steps
+    document.querySelectorAll('.wizard-step').forEach(step => step.classList.add('d-none'));
+    document.getElementById(`step-${stepNum}`).classList.remove('d-none');
+    
+    // Trigger confetti on step 4
+    if (stepNum === 4) {
+      startConfetti();
+    }
+  }
+
+  // AJAX Actions
+  
+  // Submit Reward Selection
+  function submitRewardSelection() {
+    if (!selectedRewardId) {
+      const errEl = document.getElementById('reward-error');
+      errEl.innerText = "Please select a reward card to continue!";
+      errEl.classList.remove('d-none');
+      return;
+    }
+
+    fetch(`/api/v1/campaigns/${campaignToken}/select_reward`, {
+      method: 'POST',
+      headers: getRequestHeaders(),
+      body: JSON.stringify({ reward_id: selectedRewardId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.user_profile_id) {
+        userProfileId = data.user_profile_id;
+        showStep(2);
+      } else {
+        alert(data.error || "An error occurred");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Verification system offline. Please try again.");
+    });
+  }
+
+  // Request OTP Verification Code
+  function requestOTP() {
+    const phoneInput = document.getElementById('user-phone');
+    const phone = phoneInput.value.trim();
+    const errorEl = document.getElementById('phone-error');
+
+    if (phone.length < 10) {
+      errorEl.innerText = "Please enter a valid 10-digit mobile number.";
+      errorEl.classList.remove('d-none');
+      return;
+    }
+    errorEl.classList.add('d-none');
+
+    fetch(`/api/v1/campaigns/${campaignToken}/send_otp`, {
+      method: 'POST',
+      headers: getRequestHeaders(),
+      body: JSON.stringify({
+        user_profile_id: userProfileId,
+        phone_number: phone
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        errorEl.innerText = data.error;
+        errorEl.classList.remove('d-none');
+      } else {
+        // Toggle OTP section
+        document.getElementById('phone-input-section').classList.add('d-none');
+        document.getElementById('otp-input-section').classList.remove('d-none');
+        
+        // Handle Simulated Dev OTP
+        if (data.simulated_otp) {
+          const banner = document.getElementById('simulated-otp-banner');
+          if (banner) {
+            banner.classList.remove('d-none');
+            banner.classList.add('d-flex');
+            document.getElementById('simulated-otp-text').innerText = data.simulated_otp;
+          }
+        }
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Failed to reach OTP verification gateway.");
+    });
+  }
+
+  // Auto-focus dynamic OTP input fields
+  const otpDigits = document.querySelectorAll('.otp-digit');
+  otpDigits.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      if (input.value.length === 1 && index < otpDigits.length - 1) {
+        otpDigits[index + 1].focus();
+      }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
+        otpDigits[index - 1].focus();
+      }
+    });
+  });
+
+  // Verify OTP Code
+  function submitOTP() {
+    let otpCode = "";
+    otpDigits.forEach(input => otpCode += input.value);
+    const errorEl = document.getElementById('otp-error');
+
+    if (otpCode.length < 6) {
+      errorEl.innerText = "Please enter the complete 6-digit OTP code.";
+      errorEl.classList.remove('d-none');
+      return;
+    }
+    errorEl.classList.add('d-none');
+
+    fetch(`/api/v1/campaigns/${campaignToken}/verify_otp`, {
+      method: 'POST',
+      headers: getRequestHeaders(),
+      body: JSON.stringify({
+        user_profile_id: userProfileId,
+        otp_code: otpCode
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        errorEl.innerText = data.error;
+        errorEl.classList.remove('d-none');
+      } else {
+        // Hide simulation banner if open
+        const banner = document.getElementById('simulated-otp-banner');
+        if (banner) banner.classList.add('d-none');
+
+        showStep(3);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Verification servers busy. Please try again.");
+    });
+  }
+
+  // Back to Phone Number view
+  function changePhoneNumber() {
+    document.getElementById('otp-input-section').classList.add('d-none');
+    document.getElementById('phone-input-section').classList.remove('d-none');
+    const banner = document.getElementById('simulated-otp-banner');
+    if (banner) banner.classList.add('d-none');
+  }
+
+  // Submit User profile Details
+  function submitUserDetails() {
+    const firstName = document.getElementById('user-first-name').value.trim();
+    const lastName = document.getElementById('user-last-name').value.trim();
+    const email = document.getElementById('user-email').value.trim();
+    const address = document.getElementById('user-address').value.trim();
+    const errorEl = document.getElementById('details-error');
+
+    fetch(`/api/v1/campaigns/${campaignToken}/save_profile`, {
+      method: 'POST',
+      headers: getRequestHeaders(),
+      body: JSON.stringify({
+        user_profile_id: userProfileId,
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        location_address: address
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        errorEl.innerText = data.error;
+        errorEl.classList.remove('d-none');
+      } else {
+        document.getElementById('congrats-reward-name').innerText = `You won: ${data.reward_name}!`;
+        document.getElementById('congrats-profile-id').innerText = `Ref ID: #${userProfileId}`;
+        showStep(4);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Submission error. Please verify input fields.");
+    });
+  }
+
+  // Confetti Animation Logic
+  function startConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const colors = ['#a855f7', '#06b6d4', '#eab308', '#10b981', '#f43f5e'];
+    const confettiCount = 150;
+    const confettiParticles = [];
+
+    class ConfettiParticle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height - height;
+        this.size = Math.random() * 8 + 6;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.speedX = Math.random() * 4 - 2;
+        this.speedY = Math.random() * 4 + 3;
+        this.rotation = Math.random() * 360;
+        this.rotationSpeed = Math.random() * 4 - 2;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.rotation += this.rotationSpeed;
+
+        if (this.y > height) {
+          this.y = -20;
+          this.x = Math.random() * width;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation * Math.PI / 180);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < confettiCount; i++) {
+      confettiParticles.push(new ConfettiParticle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      confettiParticles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+  }
+</script>

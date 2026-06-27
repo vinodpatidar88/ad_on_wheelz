@@ -1,0 +1,88 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom border-secondary">
+  <h1 class="h2 text-white">Dashboard</h1>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="admin-card text-center">
+      <h6 class="text-muted uppercase text-xs">Total Campaigns</h6>
+      <h2 class="text-primary fw-bold mb-0 mt-2"><%= @total_campaigns %></h2>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="admin-card text-center">
+      <h6 class="text-muted uppercase text-xs">Total QR Scans/Profiles</h6>
+      <h2 class="text-info fw-bold mb-0 mt-2"><%= @total_profiles %></h2>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="admin-card text-center">
+      <h6 class="text-muted uppercase text-xs">Completed Redemptions</h6>
+      <h2 class="text-success fw-bold mb-0 mt-2"><%= @completed_profiles %></h2>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="admin-card text-center">
+      <h6 class="text-muted uppercase text-xs">Incomplete/Failed Scans</h6>
+      <h2 class="text-warning fw-bold mb-0 mt-2"><%= @incomplete_profiles %></h2>
+    </div>
+  </div>
+</div>
+
+<div class="admin-card mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="text-white mb-0">Recent Activity</h5>
+    <a href="<%= admin_user_profiles_path %>" class="btn btn-outline-light btn-sm">View All Profiles</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Campaign</th>
+          <th>Reward</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @recent_profiles.any? %>
+          <% @recent_profiles.each do |profile| %>
+            <tr>
+              <td><%= link_to "##{profile.id}", admin_user_profile_path(profile), class: "text-decoration-none text-primary" %></td>
+              <td><%= profile.campaign&.name %></td>
+              <td>
+                <% if profile.reward %>
+                  <span class="badge bg-secondary"><%= profile.reward.reward_type.capitalize %></span> <%= profile.reward.name %>
+                <% else %>
+                  <span class="text-muted">None Selected</span>
+                <% end %>
+              </td>
+              <td><%= profile.user&.phone_number || "N/A" %></td>
+              <td>
+                <% case profile.status %>
+                <% when 'completed' %>
+                  <span class="badge bg-success">Completed</span>
+                <% when 'otp_verified' %>
+                  <span class="badge bg-info text-dark">OTP Verified (Abandoned)</span>
+                <% when 'otp_sent' %>
+                  <span class="badge bg-warning text-dark">OTP Sent</span>
+                <% when 'draft' %>
+                  <span class="badge bg-light text-dark">Draft</span>
+                <% else %>
+                  <span class="badge bg-danger"><%= profile.status.capitalize %></span>
+                <% end %>
+              </td>
+              <td><%= profile.created_at.strftime("%b %d, %Y %H:%M") %></td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">No recent activity detected.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

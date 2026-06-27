@@ -1,0 +1,94 @@
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom border-secondary">
+  <h1 class="h2 text-white">User Profiles & Leads</h1>
+  <div>
+    <%= link_to 'Export CSV', admin_user_profiles_path(request.query_parameters.merge(format: :csv)), class: 'btn btn-outline-success btn-sm me-2' %>
+    <%= link_to 'Export PDF', admin_user_profiles_path(request.query_parameters.merge(format: :pdf)), class: 'btn btn-outline-danger btn-sm', target: '_blank' %>
+  </div>
+</div>
+
+<div class="admin-card mb-4">
+  <h6 class="text-white mb-3">Filters</h6>
+  <%= form_with url: admin_user_profiles_path, method: :get, local: true, class: 'row g-3' do |f| %>
+    <div class="col-md-3">
+      <%= f.label :start_date, "From Date", class: 'form-label text-xs text-muted' %>
+      <%= f.date_field :start_date, value: params[:start_date], class: 'form-control form-control-sm bg-dark text-white border-secondary' %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :end_date, "To Date", class: 'form-label text-xs text-muted' %>
+      <%= f.date_field :end_date, value: params[:end_date], class: 'form-control form-control-sm bg-dark text-white border-secondary' %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :campaign_id, "Campaign", class: 'form-label text-xs text-muted' %>
+      <%= f.collection_select :campaign_id, Campaign.all, :id, :name, { include_blank: "All Campaigns", selected: params[:campaign_id] }, class: 'form-select form-select-sm bg-dark text-white border-secondary' %>
+    </div>
+    <div class="col-md-2">
+      <%= f.label :status, "Status", class: 'form-label text-xs text-muted' %>
+      <%= f.select :status, UserProfile::STATUSES.map { |s| [s.upcase, s] }, { include_blank: "All Statuses", selected: params[:status] }, class: 'form-select form-select-sm bg-dark text-white border-secondary' %>
+    </div>
+    <div class="col-md-1 d-flex align-items-end">
+      <%= f.submit "Filter", class: 'btn btn-primary btn-sm w-100' %>
+    </div>
+  <% end %>
+</div>
+
+<div class="admin-card">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Phone</th>
+          <th>Campaign</th>
+          <th>Reward</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th style="width: 100px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @user_profiles.any? %>
+          <% @user_profiles.each do |p| %>
+            <tr>
+              <td>#<%= p.id %></td>
+              <td><%= p.user&.phone_number || 'N/A' %></td>
+              <td><%= p.campaign&.name %></td>
+              <td>
+                <% if p.reward %>
+                  <span class="badge bg-secondary"><%= p.reward.reward_type.capitalize %></span> <%= p.reward.name %>
+                <% else %>
+                  <span class="text-muted">None</span>
+                <% end %>
+              </td>
+              <td class="text-white"><%= "#{p.first_name} #{p.last_name}".strip.presence || 'N/A' %></td>
+              <td><%= p.email || 'N/A' %></td>
+              <td>
+                <% case p.status %>
+                <% when 'completed' %>
+                  <span class="badge bg-success">Completed</span>
+                <% when 'otp_verified' %>
+                  <span class="badge bg-info text-dark">OTP Verified (Abandoned)</span>
+                <% when 'otp_sent' %>
+                  <span class="badge bg-warning text-dark">OTP Sent</span>
+                <% when 'draft' %>
+                  <span class="badge bg-light text-dark">Draft</span>
+                <% else %>
+                  <span class="badge bg-danger"><%= p.status.capitalize %></span>
+                <% end %>
+              </td>
+              <td><%= p.created_at.strftime("%b %d, %Y") %></td>
+              <td>
+                <%= link_to 'View', admin_user_profile_path(p), class: 'btn btn-outline-primary btn-sm' %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="9" class="text-center text-muted py-4">No matching user profiles found.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom border-secondary">
+  <h1 class="h2 text-white">Campaign Details</h1>
+  <div>
+    <%= link_to 'Print/Download QR PDF', print_admin_campaign_path(@campaign), class: 'btn btn-success me-2', target: '_blank' %>
+    <%= link_to 'Edit Campaign', edit_admin_campaign_path(@campaign), class: 'btn btn-warning me-2' %>
+    <%= link_to 'Back to Campaigns', admin_campaigns_path, class: 'btn btn-outline-light' %>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-8">
+    <div class="admin-card mb-4">
+      <h4 class="text-white mb-3"><%= @campaign.name %></h4>
+      <p class="text-muted"><%= @campaign.description %></p>
+      
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <h6 class="text-muted text-uppercase text-xs">Start Date</h6>
+          <p class="text-white fw-bold"><%= @campaign.start_date.strftime("%B %d, %Y %I:%M %p") %></p>
+        </div>
+        <div class="col-md-6">
+          <h6 class="text-muted text-uppercase text-xs">End Date</h6>
+          <p class="text-white fw-bold"><%= @campaign.end_date.strftime("%B %d, %Y %I:%M %p") %></p>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <h6 class="text-muted text-uppercase text-xs">Category</h6>
+          <p class="text-white fw-bold"><%= @campaign.sub_category&.category&.name %></p>
+        </div>
+        <div class="col-md-6">
+          <h6 class="text-muted text-uppercase text-xs">Sub Category</h6>
+          <p class="text-white fw-bold"><%= @campaign.sub_category&.name %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h5 class="text-white mb-3">Campaign Rewards</h5>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @campaign.rewards.any? %>
+            <% @campaign.rewards.each do |reward| %>
+              <tr>
+                <td><span class="badge bg-secondary"><%= reward.reward_type.capitalize %></span></td>
+                <td class="fw-bold text-white"><%= reward.name %></td>
+                <td><%= reward.description %></td>
+                <td><%= reward.stock %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="4" class="text-center text-muted">No rewards configured for this campaign.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="admin-card text-center mb-4">
+      <h5 class="text-white mb-3">Campaign QR Code</h5>
+      <div class="p-3 bg-white d-inline-block rounded mb-3">
+        <%= raw @qr_svg %>
+      </div>
+      <p class="text-muted text-xs">
+        Scan token: <code><%= @campaign.qr_token %></code>
+      </p>
+      <div class="mt-2">
+        <a href="<%= public_campaign_path(qr_token: @campaign.qr_token) %>" class="btn btn-outline-primary btn-sm w-100" target="_blank">Open Public Flow</a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,94 @@
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom border-secondary">
+  <h1 class="h2 text-white">Profile Details</h1>
+  <%= link_to 'Back to Profiles', admin_user_profiles_path, class: 'btn btn-outline-light' %>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-7">
+    <div class="admin-card mb-4">
+      <h5 class="text-white border-bottom border-secondary pb-2 mb-3">User & Contact Info</h5>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="text-xs text-muted d-block">Full Name</label>
+          <span class="text-white fw-bold"><%= "#{@user_profile.first_name} #{@user_profile.last_name}".strip.presence || 'N/A' %></span>
+        </div>
+        <div class="col-md-6">
+          <label class="text-xs text-muted d-block">Email Address</label>
+          <span class="text-white fw-bold"><%= @user_profile.email || 'N/A' %></span>
+        </div>
+        <div class="col-md-6">
+          <label class="text-xs text-muted d-block">Phone Number</label>
+          <span class="text-white fw-bold"><%= @user_profile.user&.phone_number || 'N/A' %></span>
+        </div>
+        <div class="col-md-6">
+          <label class="text-xs text-muted d-block">Phone Verified</label>
+          <span class="badge <%= @user_profile.user&.verified? ? 'bg-success' : 'bg-danger' %>">
+            <%= @user_profile.user&.verified? ? 'VERIFIED' : 'UNVERIFIED' %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card mb-4">
+      <h5 class="text-white border-bottom border-secondary pb-2 mb-3">Participation Details</h5>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="text-xs text-muted d-block">Campaign Name</label>
+          <span class="text-white fw-bold"><%= @user_profile.campaign&.name %></span>
+        </div>
+        <div class="col-md-6">
+          <label class="text-xs text-muted d-block">Reward Selected</label>
+          <% if @user_profile.reward %>
+            <span class="badge bg-secondary"><%= @user_profile.reward.reward_type.capitalize %></span>
+            <span class="text-white fw-bold"><%= @user_profile.reward.name %></span>
+          <% else %>
+            <span class="text-muted">None</span>
+          <% end %>
+        </div>
+        <div class="col-md-6">
+          <label class="text-xs text-muted d-block">IP Address</label>
+          <span class="text-white"><%= @user_profile.ip_address || 'N/A' %></span>
+        </div>
+        <div class="col-md-6">
+          <label class="text-xs text-muted d-block">Scan Date/Time</label>
+          <span class="text-white"><%= @user_profile.created_at.strftime("%B %d, %Y %I:%M %p") %></span>
+        </div>
+        <div class="col-md-12">
+          <label class="text-xs text-muted d-block">Location Address</label>
+          <p class="text-white mb-0 bg-dark p-2 rounded border border-secondary" style="white-space: pre-wrap;"><%= @user_profile.location_address.presence || 'N/A' %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-5">
+    <div class="admin-card">
+      <h5 class="text-white border-bottom border-secondary pb-2 mb-3">Update Status & Feedback</h5>
+      <%= form_with model: [:admin, @user_profile], local: true do |f| %>
+        <% if @user_profile.errors.any? %>
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              <% @user_profile.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="mb-3">
+          <%= f.label :status, "Redemption Status", class: 'form-label text-muted text-xs' %>
+          <%= f.select :status, UserProfile::STATUSES.map { |s| [s.upcase, s] }, {}, class: 'form-select bg-dark text-white border-secondary' %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :feedback, "User Feedback / Admin Notes", class: 'form-label text-muted text-xs' %>
+          <%= f.text_area :feedback, rows: 6, placeholder: "Enter user feedback, reward tracking info, or admin comments here...", class: 'form-control bg-dark text-white border-secondary' %>
+        </div>
+
+        <div class="mt-4">
+          <%= f.submit "Save Changes", class: 'btn btn-primary w-100' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

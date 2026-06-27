@@ -1,0 +1,55 @@
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom border-secondary">
+  <h1 class="h2 text-white">Campaigns</h1>
+  <%= link_to 'New Campaign', new_admin_campaign_path, class: 'btn btn-primary' %>
+</div>
+
+<div class="admin-card">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Sub Category</th>
+          <th>QR Token</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Status</th>
+          <th style="width: 220px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @campaigns.any? %>
+          <% @campaigns.each do |campaign| %>
+            <tr>
+              <td><%= campaign.id %></td>
+              <td class="fw-bold text-white"><%= campaign.name %></td>
+              <td><span class="badge bg-secondary"><%= campaign.sub_category&.name %></span></td>
+              <td><code><%= campaign.qr_token %></code></td>
+              <td><%= campaign.start_date.strftime("%b %d, %Y") %></td>
+              <td><%= campaign.end_date.strftime("%b %d, %Y") %></td>
+              <td>
+                <% if campaign.active? %>
+                  <span class="badge bg-success">Active</span>
+                <% else %>
+                  <span class="badge bg-danger">Inactive</span>
+                <% end %>
+              </td>
+              <td>
+                <div class="d-flex gap-2">
+                  <%= link_to 'Show', admin_campaign_path(campaign), class: 'btn btn-outline-info btn-sm' %>
+                  <%= link_to 'Edit', edit_admin_campaign_path(campaign), class: 'btn btn-outline-warning btn-sm' %>
+                  <%= button_to 'Delete', admin_campaign_path(campaign), method: :delete, data: { turbo_confirm: 'Are you sure?' }, class: 'btn btn-outline-danger btn-sm' %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="8" class="text-center text-muted py-4">No campaigns created yet.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

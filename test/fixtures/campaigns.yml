@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sub_category: one
+  name: MyString
+  description: MyText
+  qr_token: MyString
+  start_date: 2026-06-27 20:05:49
+  end_date: 2026-06-27 20:05:49
+
+two:
+  sub_category: two
+  name: MyString
+  description: MyText
+  qr_token: MyString
+  start_date: 2026-06-27 20:05:49
+  end_date: 2026-06-27 20:05:49

@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  campaign: one
+  reward: one
+  first_name: MyString
+  last_name: MyString
+  email: MyString
+  ip_address: MyString
+  location_address: MyText
+  status: MyString
+  otp_code: MyString
+  otp_expires_at: 2026-06-27 20:05:57
+  otp_attempts: 1
+  feedback: MyText
+
+two:
+  user: two
+  campaign: two
+  reward: two
+  first_name: MyString
+  last_name: MyString
+  email: MyString
+  ip_address: MyString
+  location_address: MyText
+  status: MyString
+  otp_code: MyString
+  otp_expires_at: 2026-06-27 20:05:57
+  otp_attempts: 1
+  feedback: MyText
